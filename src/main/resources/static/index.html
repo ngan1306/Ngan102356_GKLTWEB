@@ -102,6 +102,35 @@
 
         <div class="app-content">
           <div class="container-fluid">
+            <div class="row g-3 mb-3" id="statsCards">
+              <div class="col-lg-4 col-sm-6">
+                <div class="info-box shadow-sm">
+                  <span class="info-box-icon bg-primary"><i class="bi bi-people-fill"></i></span>
+                  <div class="info-box-content">
+                    <span class="info-box-text">Tổng sinh viên</span>
+                    <span class="info-box-number" id="cardTotal">0</span>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-4 col-sm-6">
+                <div class="info-box shadow-sm">
+                  <span class="info-box-icon bg-success"><i class="bi bi-journal-bookmark-fill"></i></span>
+                  <div class="info-box-content">
+                    <span class="info-box-text">Trang hiện tại</span>
+                    <span class="info-box-number" id="cardPage">0</span>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-4 col-sm-6">
+                <div class="info-box shadow-sm">
+                  <span class="info-box-icon bg-warning"><i class="bi bi-layout-text-sidebar-reverse"></i></span>
+                  <div class="info-box-content">
+                    <span class="info-box-text">Đang hiển thị</span>
+                    <span class="info-box-number" id="cardDisplayed">0</span>
+                  </div>
+                </div>
+              </div>
+            </div>
             <div class="card">
               <div class="card-header d-flex flex-wrap gap-2 align-items-center">
                 <h3 class="card-title mb-0">Danh sách sinh viên</h3>
@@ -115,6 +144,9 @@
                       placeholder="Tìm gần đúng theo tên/email..."
                     />
                   </div>
+                  <button class="btn btn-outline-secondary btn-sm" id="btnRefresh">
+                    <i class="bi bi-arrow-clockwise me-1"></i> Làm mới
+                  </button>
                   <button class="btn btn-primary btn-sm" id="btnAdd">
                     <i class="bi bi-plus-circle me-1"></i> Thêm sinh viên
                   </button>
@@ -202,6 +234,10 @@
         const pagination = document.getElementById('pagination');
         const paginationInfo = document.getElementById('paginationInfo');
         const searchInput = document.getElementById('searchInput');
+        const cardTotal = document.getElementById('cardTotal');
+        const cardPage = document.getElementById('cardPage');
+        const cardDisplayed = document.getElementById('cardDisplayed');
+        const btnRefresh = document.getElementById('btnRefresh');
 
         const studentModalEl = document.getElementById('studentModal');
         const studentModalTitle = document.getElementById('studentModalTitle');
@@ -259,7 +295,20 @@
           paginationInfo.textContent =
             'Hiển thị ' + from + '-' + to + ' trên tổng ' + totalElements + ' sinh viên';
 
+          renderStats(from, to);
           renderPagination();
+        }
+
+        function renderStats(from, to) {
+          if (cardTotal) {
+            cardTotal.textContent = totalElements;
+          }
+          if (cardPage) {
+            cardPage.textContent = totalPages === 0 ? '0' : String(currentPage + 1) + ' / ' + totalPages;
+          }
+          if (cardDisplayed) {
+            cardDisplayed.textContent = totalElements === 0 ? '0' : from + ' - ' + to;
+          }
         }
 
         function renderPagination() {
@@ -309,6 +358,11 @@
           currentPage = 0;
           loadStudents();
         });
+        if (btnRefresh) {
+          btnRefresh.addEventListener('click', function () {
+            loadStudents();
+          });
+        }
 
         async function loadStudents() {
           try {
